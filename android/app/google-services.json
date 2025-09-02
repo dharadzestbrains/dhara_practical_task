@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56874869493",
+    "project_id": "userlist-cda92",
+    "storage_bucket": "userlist-cda92.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56874869493:android:b58d418a431b7346295bbc",
+        "android_client_info": {
+          "package_name": "com.example.dhara_practical_task"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlu1FSdtLlGZm2k-AkEE3mxdJ_aa5w7O8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
