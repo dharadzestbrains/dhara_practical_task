@@ -8,17 +8,25 @@ class UserViewModel extends ChangeNotifier {
   bool isLoading = false;
   String? errorMessage;
 
-  Future<void> getUsers(int page) async {
+  Future<bool> getUsers(int page) async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
-
     try {
-      users = await _apiService.fetchUsers(page);
+      final result = await _apiService.fetchUsers(page);
+
+      if (result.isNotEmpty) {
+        users = result;
+        notifyListeners();
+        return true; // ✅ data found
+      } else {
+        return false; // ❌ no data
+      }
     } catch (e) {
       debugPrint("Error fetching users: $e");
       errorMessage = e.toString();
       users = [];
+      return false;
     } finally {
       isLoading = false;
       notifyListeners();

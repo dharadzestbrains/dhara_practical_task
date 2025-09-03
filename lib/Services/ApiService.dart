@@ -6,7 +6,10 @@ class ApiService {
   final String baseUrl = "https://reqres.in/api";
 
   Future<List<User>> fetchUsers(int page) async {
-    final response = await http.get(Uri.parse("$baseUrl/users?page=$page"));
+    final response = await http.get(
+      Uri.parse('https://reqres.in/api/users?page=$page'),
+      headers: {"accept": "application/json"},
+    );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

@@ -1,11 +1,9 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ViewModel/UserViewModel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'UserDetailsVC.dart';
-import '../models/userModel.dart';
 
 class HomeVC extends StatefulWidget {
   const HomeVC({super.key});
@@ -18,8 +16,8 @@ class _HomeVCState extends State<HomeVC> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      Provider.of<UserViewModel>(context, listen: false).getUsers(1);
+    Future.microtask(() async {
+      await _fetchUsersWithFallback();
     });
   }
 
@@ -28,7 +26,10 @@ class _HomeVCState extends State<HomeVC> {
     final viewModel = Provider.of<UserViewModel>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Users")),
+      appBar: AppBar(title: const Text("Users"),
+        centerTitle: true,
+        titleTextStyle: TextStyle(color: Colors.deepPurple.shade700,fontSize: 25,fontWeight: FontWeight.bold),
+      ),
       body: Builder(
         builder: (context) {
           if (viewModel.isLoading) {
@@ -38,7 +39,7 @@ class _HomeVCState extends State<HomeVC> {
             return Center(
               child: Text(
                 "Error: ${viewModel.errorMessage}",
-                style: const TextStyle(color: Colors.red, fontSize: 16),
+                style: const TextStyle(color: Colors.red, fontSize: 18,fontWeight: FontWeight.bold),
               ),
             );
           }
@@ -52,7 +53,7 @@ class _HomeVCState extends State<HomeVC> {
             itemBuilder: (context, index) {
               final user = viewModel.users[index];
               return Card(
-                elevation: 4,
+                elevation: 6,
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -81,7 +82,8 @@ class _HomeVCState extends State<HomeVC> {
                                     child: CircularProgressIndicator(),
                                   ),
                                 ),
-                                errorWidget: (context, url, error) => const Icon(Icons.error, size: 50),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error, size: 50),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -106,15 +108,18 @@ class _HomeVCState extends State<HomeVC> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UserDetailsVC(userId: user.id), // ✅ fix
+                          builder: (context) => UserDetailsVC(
+                            userId: user.id,
+                            userData: user,
+                          ),
                         ),
                       );
                     },
                     child: Text(
                       "${user.firstName} ${user.lastName}",
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -123,11 +128,14 @@ class _HomeVCState extends State<HomeVC> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UserDetailsVC(userId: user.id), // ✅ fix
+                          builder: (context) => UserDetailsVC(
+                            userId: user.id,
+                            userData: user,
+                          ), // ✅ fix
                         ),
                       );
                     },
-                    child: Text(user.email),
+                    child: Text(user.email, style: TextStyle(color: Colors.black,fontSize: 16),),
                   ),
                 ),
               );
@@ -136,5 +144,22 @@ class _HomeVCState extends State<HomeVC> {
         },
       ),
     );
+  }
+
+  Future<void> _fetchUsersWithFallback() async {
+    final userVM = Provider.of<UserViewModel>(context, listen: false);
+
+    // Try with 0
+    bool hasData = await userVM.getUsers(0);
+
+    if (!hasData) {
+      // Try with 1
+      hasData = await userVM.getUsers(1);
+    }
+
+    if (!hasData) {
+      // Finally try with 2
+      await userVM.getUsers(2);
+    }
   }
 }
