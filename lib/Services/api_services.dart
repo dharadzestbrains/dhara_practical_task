@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/userModel.dart';
+import '../models/user_model.dart';
 
 class ApiService {
   final String baseUrl = "https://reqres.in/api";

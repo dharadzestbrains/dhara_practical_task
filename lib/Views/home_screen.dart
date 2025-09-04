@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../ViewModel/UserViewModel.dart';
+import '../../ViewModel/UserViewModel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'UserDetailsVC.dart';
+import 'user_details_screen.dart';
 
 class HomeVC extends StatefulWidget {
   const HomeVC({super.key});
@@ -23,6 +23,7 @@ class _HomeVCState extends State<HomeVC> {
 
   @override
   Widget build(BuildContext context) {
+
     final viewModel = Provider.of<UserViewModel>(context);
 
     return Scaffold(
@@ -146,6 +147,7 @@ class _HomeVCState extends State<HomeVC> {
     );
   }
 
+  // MARK: - API Call
   Future<void> _fetchUsersWithFallback() async {
     final userVM = Provider.of<UserViewModel>(context, listen: false);
 

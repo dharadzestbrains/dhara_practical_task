@@ -1,9 +1,9 @@
-import 'package:dhara_practical_task/SplashVC.dart';
+import 'package:dhara_practical_task/Views/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ViewModel/UserViewModel.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'Services/firebase_options.dart';
 
 
 void main() async {

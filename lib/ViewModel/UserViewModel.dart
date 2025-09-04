@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../models/userModel.dart';
-import '../services/ApiService.dart';
+import '../models/user_model.dart';
+import '../services/api_services.dart';
 
 class UserViewModel extends ChangeNotifier {
   final ApiService _apiService = ApiService();

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/userModel.dart';
+import '../../models/user_model.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'EditUserVC.dart';
+import 'edituser_screen.dart';
 
 class UserDetailsVC extends StatefulWidget {
   final int userId;
@@ -31,85 +31,6 @@ class _UserDetailsVCState extends State<UserDetailsVC> {
   void initState() {
     super.initState();
     _fetchUserDetails();
-  }
-
-  Future<void> _fetchUserDetails() async {
-    try {
-      final url = Uri.parse("https://reqres.in/api/users/${widget.userId}");
-      print('user Id => ${widget.userId}');
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-
-        setState(() {
-          user = User.fromJson(jsonResponse["data"]);
-          support = Support.fromJson(jsonResponse["support"]);
-          isLoading = false;
-        });
-      } else {
-        _showErrorDialog("Failed to load user details.");
-      }
-    } catch (e) {
-      _showErrorDialog("Something went wrong!");
-    }
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title:  Text(message),
-        content: Text('Are you want to display the data from the list ?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pop(); // go back
-            },
-            child: const Text("No"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              _showListData(); // load local user data
-            },
-            child: const Text("Yes"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showListData() {
-    setState(() {
-      user = widget.userData; // fallback data from list
-      support = null;          // no API support data
-      isLoading = false;
-    });
-  }
-
-  void _onMenuSelected(String value) {
-    switch (value) {
-      case 'add':
-        _saveUserToFirestore();
-        break;
-      case 'edit':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => EdituserVC(user: user!),
-          ),
-        ).then((updated) {
-          if (updated == true) {
-            // _fetchUserDetails(); // refresh after edit
-          }
-        });
-        break;
-      case 'delete':
-       _deleteUserFromFirestore();
-        break;
-    }
   }
 
   @override
@@ -199,6 +120,89 @@ class _UserDetailsVCState extends State<UserDetailsVC> {
       ),
     );
   }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title:  Text(message),
+        content: Text('Are you want to display the data from the list ?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pop(); // go back
+            },
+            child: const Text("No"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _showListData(); // load local user data
+            },
+            child: const Text("Yes"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showListData() {
+    setState(() {
+      user = widget.userData; // fallback data from list
+      support = null;          // no API support data
+      isLoading = false;
+    });
+  }
+
+  void _onMenuSelected(String value) {
+    switch (value) {
+      case 'add':
+        _saveUserToFirestore();
+        break;
+      case 'edit':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => EdituserVC(user: user!),
+          ),
+        ).then((updated) {
+          if (updated == true) {
+            // _fetchUserDetails(); // refresh after edit
+          }
+        });
+        break;
+      case 'delete':
+        _deleteUserFromFirestore();
+        break;
+    }
+  }
+
+
+// MARK: - API CALL
+Future<void> _fetchUserDetails() async {
+  try {
+    final url = Uri.parse("https://reqres.in/api/users/${widget.userId}");
+    print('user Id => ${widget.userId}');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+
+      setState(() {
+        user = User.fromJson(jsonResponse["data"]);
+        support = Support.fromJson(jsonResponse["support"]);
+        isLoading = false;
+      });
+    } else {
+      _showErrorDialog("Failed to load user details.");
+    }
+  } catch (e) {
+    _showErrorDialog("Something went wrong!");
+  }
+}
+
+// MARK: - Firebase helper methods
 
   // MARK: - Save User
   Future<void> _saveUserToFirestore() async {
